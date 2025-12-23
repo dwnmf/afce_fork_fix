@@ -39,13 +39,24 @@ class AfcScrollArea : public QScrollArea
   Q_OBJECT
   protected:
     virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
+    bool eventFilter(QObject *watched, QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
   signals:
     void mouseDown();
     void zoomStepped(int);
     void scrollStepped(int);
+  private:
+    bool m_isDragging = false;
+    bool m_dragCandidate = false;
+    QPoint m_lastDragPos;
+    QPoint m_dragStartPos;
   public:
-     explicit AfcScrollArea(QWidget* parent=0) : QScrollArea(parent) { }
+     explicit AfcScrollArea(QWidget* parent=0) : QScrollArea(parent) {
+         setCursor(Qt::OpenHandCursor);
+     }
     ~AfcScrollArea() { }
 
 };

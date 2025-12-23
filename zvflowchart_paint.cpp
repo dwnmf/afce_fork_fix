@@ -120,11 +120,31 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
     }
     else
     {
+      // Modern shadow offset for box-shadow effect
+      double shadowOffset = 4 * zoom();
+      QColor shadowColor(0, 0, 0, 40); // Subtle semi-transparent shadow
+      
       if (type() == "algorithm")
       {
         /* алгоритм */
         QBlock *body = item(0);
         Q_ASSERT_X(body != 0, "QBlock::paint()" ,"item(0) == 0. i.e. body of algorithm is nul.");
+        
+        // Draw shadow for BEGIN block
+        QRectF shadowOval(hcenter - b/2 + shadowOffset, lw + shadowOffset, b, a/2);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawRoundedRect(shadowOval, a/4, a/4);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QRectF oval(hcenter - b/2, lw, b, a/2);
         canvas->drawRoundedRect(oval, a/4, a/4);
         canvas->drawText(oval, Qt::TextSingleLine | Qt::AlignHCenter | Qt::AlignVCenter, tr("BEGIN"));
@@ -134,6 +154,21 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
         QFlowChart::drawBottomArrow(canvas, QPointF(hcenter, bottom - a/2 - lw),
                                     QSize(6 * zoom(), 12 * zoom()));
 
+        // Draw shadow for END block
+        QRectF shadowOvalEnd(hcenter - b/2 + shadowOffset, bottom - a/2 - lw + shadowOffset, b, a/2);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawRoundedRect(shadowOvalEnd, a/4, a/4);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         oval = QRectF(hcenter - b/2, bottom - a/2 - lw, b, a/2);
         canvas->drawRoundedRect(oval, a/4, a/4);
         canvas->drawText(oval, Qt::TextSingleLine | Qt::AlignHCenter | Qt::AlignVCenter, tr("END"));
@@ -147,6 +182,22 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
                                     QSize(6 * zoom(), 12 * zoom()));
         // Используем динамическую ширину блока
         double blockWidth = width - leftMargin - rightMargin;
+        
+        // Draw shadow
+        QRectF shadowRect(hcenter - blockWidth/2 + shadowOffset, y + 16 * zoom() + shadowOffset, blockWidth, a);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawRect(shadowRect);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QRectF rect(hcenter - blockWidth/2, y + 16 * zoom(), blockWidth, a);
         QRectF textRect(hcenter - blockWidth/2 + 4 * zoom(), y + 20 * zoom(), blockWidth - 8 * zoom(), a - 8 * zoom());
         canvas->drawRect(rect);
@@ -161,6 +212,22 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
                                     QSize(6 * zoom(), 12 * zoom()));
         // Используем динамическую ширину блока
         double blockWidth = width - leftMargin - rightMargin;
+        
+        // Draw shadow
+        QRectF shadowRect(hcenter - blockWidth/2 + shadowOffset, y + 16 * zoom() + shadowOffset, blockWidth, a);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawRect(shadowRect);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QRectF rect(hcenter - blockWidth/2, y + 16 * zoom(), blockWidth, a);
         QRectF textRect(hcenter - blockWidth/2+4, y + 16 * zoom()+4, blockWidth-8, a-8);
         canvas->drawRect(rect);
@@ -175,6 +242,26 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
                                     QSize(6 * zoom(), 12 * zoom()));
         // Используем динамическую ширину блока вместо фиксированной b
         double blockWidth = width - leftMargin - rightMargin;
+        
+        // Draw shadow parallelogram
+        QPointF shadowPar[4];
+        shadowPar[0] = QPointF(hcenter - blockWidth/2 + a/4 + shadowOffset, y + 16 * zoom() + shadowOffset);
+        shadowPar[1] = QPointF(hcenter + blockWidth/2 + a/4 + shadowOffset, y + 16 * zoom() + shadowOffset);
+        shadowPar[2] = QPointF(hcenter + blockWidth/2 - a/4 + shadowOffset, y + 16 * zoom() + a + shadowOffset);
+        shadowPar[3] = QPointF(hcenter - blockWidth/2 - a/4 + shadowOffset, y + 16 * zoom() + a + shadowOffset);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawPolygon(shadowPar, 4);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QPointF par[4];
         par[0] = QPointF(hcenter - blockWidth/2 + a/4, y + 16 * zoom());
         par[1] = QPointF(hcenter + blockWidth/2 + a/4, y + 16 * zoom());
@@ -196,6 +283,26 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
                                     QSize(6 * zoom(), 12 * zoom()));
         // Используем динамическую ширину блока вместо фиксированной b
         double blockWidth = width - leftMargin - rightMargin;
+        
+        // Draw shadow parallelogram
+        QPointF shadowPar[4];
+        shadowPar[0] = QPointF(hcenter - blockWidth/2 + a/4 + shadowOffset, y + 16 * zoom() + shadowOffset);
+        shadowPar[1] = QPointF(hcenter + blockWidth/2 + a/4 + shadowOffset, y + 16 * zoom() + shadowOffset);
+        shadowPar[2] = QPointF(hcenter + blockWidth/2 - a/4 + shadowOffset, y + 16 * zoom() + a + shadowOffset);
+        shadowPar[3] = QPointF(hcenter - blockWidth/2 - a/4 + shadowOffset, y + 16 * zoom() + a + shadowOffset);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawPolygon(shadowPar, 4);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QPointF par[4];
         par[0] = QPointF(hcenter - blockWidth/2 + a/4, y + 16 * zoom());
         par[1] = QPointF(hcenter + blockWidth/2 + a/4, y + 16 * zoom());
@@ -214,6 +321,26 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
         canvas->drawLine(QLineF(hcenter, y-0.5, hcenter, y + 16 * zoom()));
         QFlowChart::drawBottomArrow(canvas, QPointF(hcenter, y + 16 * zoom()),
                                     QSize(6 * zoom(), 12 * zoom()));
+        
+        // Draw shadow diamond
+        QPointF shadowPar[4];
+        shadowPar[0] = QPointF(hcenter - b/2 + shadowOffset, y + 16 * zoom() + a/2 + shadowOffset);
+        shadowPar[1] = QPointF(hcenter + shadowOffset     , y + 16 * zoom() + shadowOffset);
+        shadowPar[2] = QPointF(hcenter + b/2 + shadowOffset, y + 16 * zoom() + a/2 + shadowOffset);
+        shadowPar[3] = QPointF(hcenter + shadowOffset     , y + 16 * zoom() + a + shadowOffset);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawPolygon(shadowPar, 4);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QPointF par[4];
         par[0] = QPointF(hcenter - b/2, y + 16 * zoom() + a/2);
         par[1] = QPointF(hcenter      , y + 16 * zoom()      );
@@ -257,6 +384,26 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
         canvas->drawLine(QLineF(hcenter, y-0.5, hcenter, y + 32 * zoom()));
         QFlowChart::drawBottomArrow(canvas, QPointF(hcenter, y + 32 * zoom()),
                                     QSize(6 * zoom(), 12 * zoom()));
+        
+        // Draw shadow diamond
+        QPointF shadowPar[4];
+        shadowPar[0] = QPointF(hcenter - b/2 + shadowOffset, y + 32 * zoom() + a/2 + shadowOffset);
+        shadowPar[1] = QPointF(hcenter + shadowOffset     , y + 32 * zoom() + shadowOffset);
+        shadowPar[2] = QPointF(hcenter + b/2 + shadowOffset, y + 32 * zoom() + a/2 + shadowOffset);
+        shadowPar[3] = QPointF(hcenter + shadowOffset     , y + 32 * zoom() + a + shadowOffset);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawPolygon(shadowPar, 4);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QPointF par[4];
         par[0] = QPointF(hcenter - b/2, y + 32 * zoom() + a/2);
         par[1] = QPointF(hcenter      , y + 32 * zoom()      );
@@ -305,6 +452,26 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
 
         QFlowChart::drawBottomArrow(canvas, QPointF(hcenter, top),
                                     QSize(6 * zoom(), 12 * zoom()));
+        
+        // Draw shadow diamond
+        QPointF shadowPar[4];
+        shadowPar[0] = QPointF(hcenter - b/2 + shadowOffset, top + a/2 + shadowOffset);
+        shadowPar[1] = QPointF(hcenter + shadowOffset     , top + shadowOffset);
+        shadowPar[2] = QPointF(hcenter + b/2 + shadowOffset, top + a/2 + shadowOffset);
+        shadowPar[3] = QPointF(hcenter + shadowOffset     , top + a + shadowOffset);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawPolygon(shadowPar, 4);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QPointF par[4];
         par[0] = QPointF(hcenter - b/2, top + a/2);
         par[1] = QPointF(hcenter      , top      );
@@ -336,6 +503,28 @@ void QBlock::paint(QPainter *canvas, bool fontSizeInPoints) const
         canvas->drawLine(QLineF(hcenter, y-0.5, hcenter, y + 32 * zoom()));
         QFlowChart::drawBottomArrow(canvas, QPointF(hcenter, y + 32 * zoom()),
                                     QSize(6 * zoom(), 12 * zoom()));
+        
+        // Draw shadow hexagon
+        QPointF shadowHex[6];
+        shadowHex[0] = QPointF(hcenter - b/2 + shadowOffset, y + 32 * zoom() + a/2 + shadowOffset);
+        shadowHex[1] = QPointF(hcenter - a/2 + shadowOffset, y + 32 * zoom() + shadowOffset);
+        shadowHex[2] = QPointF(hcenter + a/2 + shadowOffset, y + 32 * zoom() + shadowOffset);
+        shadowHex[3] = QPointF(hcenter + b/2 + shadowOffset, y + 32 * zoom() + a/2 + shadowOffset);
+        shadowHex[4] = QPointF(hcenter + a/2 + shadowOffset, y + 32 * zoom() + a + shadowOffset);
+        shadowHex[5] = QPointF(hcenter - a/2 + shadowOffset, y + 32 * zoom() + a + shadowOffset);
+        canvas->setPen(Qt::NoPen);
+        canvas->setBrush(shadowColor);
+        canvas->drawPolygon(shadowHex, 6);
+        
+        // Restore pen/brush
+        if(flowChart()->status() == QFlowChart::Selectable && isActive()) {
+          canvas->setPen(QPen(st.selectedForeground(), lw));
+          canvas->setBrush(QBrush(st.selectedBackground()));
+        } else {
+          canvas->setPen(QPen(st.normalForeground(), lw));
+          canvas->setBrush(QBrush(st.normalBackground()));
+        }
+        
         QPointF hex[6];
         hex[0] = QPointF(hcenter - b/2, y + 32 * zoom() + a/2);
         hex[1] = QPointF(hcenter - a/2, y + 32 * zoom()      );

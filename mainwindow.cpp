@@ -30,8 +30,122 @@ QString afceVersion()
 
 void AfcScrollArea::mousePressEvent(QMouseEvent *event)
 {
-    event->accept();
-    emit mouseDown();
+    if (event->button() == Qt::LeftButton) {
+        m_dragCandidate = false;
+        m_isDragging = true;
+        m_lastDragPos = event->globalPos();
+        m_dragStartPos = m_lastDragPos;
+        setCursor(Qt::ClosedHandCursor);
+        event->accept();
+    } else {
+        event->accept();
+        emit mouseDown();
+    }
+}
+
+void AfcScrollArea::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_isDragging) {
+        QPoint delta = event->globalPos() - m_lastDragPos;
+        m_lastDragPos = event->globalPos();
+        
+        QScrollBar *hBar = horizontalScrollBar();
+        QScrollBar *vBar = verticalScrollBar();
+        
+        if (hBar) hBar->setValue(hBar->value() - delta.x());
+        if (vBar) vBar->setValue(vBar->value() - delta.y());
+        
+        event->accept();
+    } else {
+        QScrollArea::mouseMoveEvent(event);
+    }
+}
+
+void AfcScrollArea::resizeEvent(QResizeEvent *event)
+{
+    QScrollArea::resizeEvent(event);
+    QFlowChart *chart = qobject_cast<QFlowChart *>(widget());
+    if (chart) {
+        chart->realignObjects();
+    }
+}
+
+bool AfcScrollArea::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == widget()) {
+        QFlowChart *chart = qobject_cast<QFlowChart *>(widget());
+        if (!chart || chart->status() != QFlowChart::Selectable) {
+            return QScrollArea::eventFilter(watched, event);
+        }
+
+        switch (event->type()) {
+        case QEvent::MouseButtonPress: {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                m_dragCandidate = true;
+                m_lastDragPos = mouseEvent->globalPos();
+                m_dragStartPos = mouseEvent->globalPos();
+            }
+            break;
+        }
+        case QEvent::MouseMove: {
+            if (!m_dragCandidate) {
+                break;
+            }
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if ((mouseEvent->buttons() & Qt::LeftButton) == 0) {
+                break;
+            }
+
+            if (!m_isDragging) {
+                int threshold = QApplication::startDragDistance();
+                if ((mouseEvent->globalPos() - m_dragStartPos).manhattanLength() < threshold) {
+                    break;
+                }
+                m_isDragging = true;
+                setCursor(Qt::ClosedHandCursor);
+            }
+
+            QPoint delta = mouseEvent->globalPos() - m_lastDragPos;
+            m_lastDragPos = mouseEvent->globalPos();
+
+            QScrollBar *hBar = horizontalScrollBar();
+            QScrollBar *vBar = verticalScrollBar();
+
+            if (hBar) hBar->setValue(hBar->value() - delta.x());
+            if (vBar) vBar->setValue(vBar->value() - delta.y());
+
+            return true;
+        }
+        case QEvent::MouseButtonRelease: {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                m_dragCandidate = false;
+                if (m_isDragging) {
+                    m_isDragging = false;
+                    setCursor(Qt::OpenHandCursor);
+                    return true;
+                }
+            }
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
+    return QScrollArea::eventFilter(watched, event);
+}
+
+void AfcScrollArea::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton && m_isDragging) {
+        m_isDragging = false;
+        setCursor(Qt::OpenHandCursor);
+        event->accept();
+    } else {
+        QScrollArea::mouseReleaseEvent(event);
+    }
 }
 
 void AfcScrollArea::wheelEvent(QWheelEvent *event)
@@ -285,9 +399,15 @@ void MainWindow::updateActions()
 
 void MainWindow::setDocument(QFlowChart * aDocument)
 {
+    if (fDocument) {
+        fDocument->removeEventFilter(saScheme);
+    }
     fDocument = aDocument;
     saScheme->setWidget(fDocument);
     saScheme->setAutoFillBackground(true);
+    if (fDocument) {
+        fDocument->installEventFilter(saScheme);
+    }
     fDocument->show();
     fDocument->move(0,0);
 }
