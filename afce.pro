@@ -120,6 +120,9 @@ DEFINES += PROGRAM_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += main.cpp \
     mainwindow.cpp \
+    mainwindow_ui.cpp \
+    mainwindow_document.cpp \
+    mainwindow_blocks.cpp \
     thelpwindow.cpp \
     zvflowchart.cpp \
     qflowchartstyle.cpp \
