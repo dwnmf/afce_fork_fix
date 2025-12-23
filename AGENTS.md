@@ -15,7 +15,10 @@
 ```
 afce-master/
 ├── main.cpp                 # Точка входа приложения
-├── mainwindow.cpp/.h        # Главное окно приложения (MainWindow)
+├── mainwindow.cpp/.h        # Главное окно приложения (MainWindow, базовая логика)
+├── mainwindow_ui.cpp        # UI-сборка (меню/тулбары/панели)
+├── mainwindow_document.cpp  # Операции с документом и кодогенерация
+├── mainwindow_blocks.cpp    # Диалоги блоков и инструменты вставки
 ├── zvflowchart.cpp/.h       # Ядро: QFlowChart (виджет) и QBlock (блоки)
 ├── qflowchartstyle.cpp/.h   # Стили оформления блок-схем
 ├── sourcecodegenerator.cpp/.h # Генерация кода из блок-схем
@@ -30,7 +33,6 @@ afce-master/
 ```
 
 ---
-d
 ## Архитектура
 
 ### Главные классы
@@ -82,7 +84,7 @@ bool isBranch;                       // Является ли веткой
 | `io` | Ввод (параллелограмм) | `vars` (через запятую) |
 | `ou` | Вывод (параллелограмм) | `vars` (через запятую) |
 
-#### 3. `MainWindow` (mainwindow.h/cpp)
+#### 3. `MainWindow` (mainwindow.h + *.cpp)
 **Главное окно приложения** с меню, панелью инструментов и областью редактирования.
 
 **Ключевые слоты:**
@@ -91,6 +93,12 @@ bool isBranch;                       // Является ли веткой
 - `slotFileExport()` / `slotFileExportSVG()` — экспорт в PNG/SVG
 - `slotFilePrint()` — печать
 - `slotTool*()` — вставка блоков разных типов
+
+**Разбиение реализации:**
+- `mainwindow.cpp` — базовая логика, состояние окна, настройки, locale
+- `mainwindow_ui.cpp` — UI-сборка и переводы
+- `mainwindow_document.cpp` — операции с документом, генераторы, экспорт/печать
+- `mainwindow_blocks.cpp` — диалоги редактирования блоков и инструменты вставки
 
 #### 4. `SourceCodeGenerator` (sourcecodegenerator.h/cpp)
 Генерирует исходный код из блок-схемы по JSON-шаблонам из `generators/`.
@@ -152,7 +160,7 @@ clientWidth = qMax(minWidth, textWidth);
 ```cpp
 aBlock->flowChart()->makeUndo();
 aBlock->attributes[...] = ...;
-aBlock->flowChart()->realignObjects();  // ← Немедленный пересчёт
+aBlock->flowChart()->realignObjects();  // <- Немедленный пересчёт
 aBlock->flowChart()->update();
 aBlock->flowChart()->makeChanged();
 ```

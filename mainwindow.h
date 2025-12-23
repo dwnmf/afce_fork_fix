@@ -29,6 +29,9 @@
 #include <QLabel>
 #include <QApplication>
 #include <QTextCodec>
+#include <QScrollBar>
+#include <QStatusBar>
+#include <QMessageBox>
 
 
 class AfcScrollArea : public QScrollArea
@@ -135,7 +138,7 @@ protected:
 void closeEvent(QCloseEvent *event);
 
 public:
-    MainWindow(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
     ~MainWindow();
 //    TAlgorithmBlock *root() const;
 //    void setRoot(TAlgorithmBlock *aRoot);

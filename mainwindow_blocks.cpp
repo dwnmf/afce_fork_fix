@@ -15,6 +15,14 @@
 
 #include "mainwindow.h"
 #include <QtGui>
+#include <QDialog>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QTextEdit>
+#include <QVBoxLayout>
 
 void MainWindow::slotHelpAbout()
 {
@@ -195,7 +203,7 @@ void MainWindow::slotEditBlock(QBlock *aBlock)
                 if(aBlock->flowChart())
                 {
                     aBlock->flowChart()->makeUndo();
-                    aBlock->attributes["vars"] = te->toPlainText().split("\n", QString::SkipEmptyParts).join(",");
+                    aBlock->attributes["vars"] = te->toPlainText().split("\n", Qt::SkipEmptyParts).join(",");
                     aBlock->flowChart()->realignObjects();
                     aBlock->flowChart()->update();
                     aBlock->flowChart()->makeChanged();

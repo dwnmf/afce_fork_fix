@@ -36,23 +36,24 @@ void AfcScrollArea::mousePressEvent(QMouseEvent *event)
 
 void AfcScrollArea::wheelEvent(QWheelEvent *event)
 {
+    int delta = event->angleDelta().y();
     if((event->modifiers() & Qt::ControlModifier) != 0) {
         event->ignore();
-        emit zoomStepped(event->delta() / 120);
+        emit zoomStepped(delta / 120);
     }
     else {
         if((event->modifiers() & Qt::ShiftModifier) == 0) {
             QScrollBar * vsb = verticalScrollBar();
-            if (vsb != NULL) {
+            if (vsb != nullptr) {
                 /* scroll vertically */
-                vsb->setValue(vsb->value() - event->delta());
+                vsb->setValue(vsb->value() - delta);
             }
         }
         else {
             QScrollBar * gsb = horizontalScrollBar();
-            if (gsb != NULL) {
+            if (gsb != nullptr) {
                 /* scroll horizontally */
-                gsb->setValue(gsb->value() - event->delta());
+                gsb->setValue(gsb->value() - delta);
             }
         }
         event->accept();
@@ -61,7 +62,7 @@ void AfcScrollArea::wheelEvent(QWheelEvent *event)
 
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
-    : QMainWindow(parent, flags), fDocument(0)
+    : QMainWindow(parent, flags), fDocument(nullptr)
 {
 #if defined(Q_WS_X11) or defined(Q_OS_LINUX)
     QDir::setSearchPaths("generators", QStringList() << QString(PROGRAM_DATA_DIR) + "generators");

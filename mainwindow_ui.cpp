@@ -15,6 +15,8 @@
 
 #include "mainwindow.h"
 #include <QtGui>
+#include <QMenu>
+#include <QMenuBar>
 
 void MainWindow::setupUi()
 {
@@ -344,4 +346,3 @@ void MainWindow::docCodeVisibilityChanged(bool visible)
 {
     actCode->setChecked(visible);
 }
-

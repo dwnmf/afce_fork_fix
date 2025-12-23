@@ -1,5 +1,8 @@
 build/main.o
 build/mainwindow.o
+build/mainwindow_ui.o
+build/mainwindow_document.o
+build/mainwindow_blocks.o
 build/thelpwindow.o
 build/zvflowchart.o
 build/qflowchartstyle.o

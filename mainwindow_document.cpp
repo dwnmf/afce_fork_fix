@@ -204,7 +204,7 @@ void MainWindow::slotFileExport()
         QStringList masks;
         if(rx.indexIn(sf)!= -1) {
             // each filter may content several masks splitted by a spaces
-            masks = rx.cap(1).split(" ", QString::SkipEmptyParts);
+            masks = rx.cap(1).split(" ", Qt::SkipEmptyParts);
 
             bool matches = false;
             for(int i = 0; i < masks.size(); ++i) {
