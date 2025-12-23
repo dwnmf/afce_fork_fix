@@ -1,0 +1,11 @@
+build/main.o
+build/mainwindow.o
+build/thelpwindow.o
+build/zvflowchart.o
+build/qflowchartstyle.o
+build/sourcecodegenerator.o
+build/qrc_afce.o
+build/moc_mainwindow.o
+build/moc_thelpwindow.o
+build/moc_zvflowchart.o
+build/moc_sourcecodegenerator.o
