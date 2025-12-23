@@ -124,7 +124,10 @@ SOURCES += main.cpp \
     mainwindow_document.cpp \
     mainwindow_blocks.cpp \
     thelpwindow.cpp \
-    zvflowchart.cpp \
+    zvflowchart_core.cpp \
+    zvflowchart_interaction.cpp \
+    zvflowchart_layout.cpp \
+    zvflowchart_paint.cpp \
     qflowchartstyle.cpp \
     sourcecodegenerator.cpp
 

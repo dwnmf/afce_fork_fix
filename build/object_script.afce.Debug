@@ -4,7 +4,10 @@ build/mainwindow_ui.o
 build/mainwindow_document.o
 build/mainwindow_blocks.o
 build/thelpwindow.o
-build/zvflowchart.o
+build/zvflowchart_core.o
+build/zvflowchart_interaction.o
+build/zvflowchart_layout.o
+build/zvflowchart_paint.o
 build/qflowchartstyle.o
 build/sourcecodegenerator.o
 build/qrc_afce.o
